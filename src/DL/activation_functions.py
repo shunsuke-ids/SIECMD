@@ -1,4 +1,5 @@
 import numpy as np
+import keras
 from keras import backend as K
 import tensorflow as tf
 
@@ -10,7 +11,7 @@ def linear_activation(x):
         \begin{cases} 0 \,& x \leq 0 \\ min(x, 2\pi)  \,& \text{else}
         \end{cases}$
     '''
-    return K.switch(x <= 0, tf.math.maximum(x, 0.), tf.math.minimum(x,  359))
+    return tf.where(x <= 0, tf.math.maximum(x, 0.), tf.math.minimum(x,  359))
 
 
 def cyclic_activation(x):

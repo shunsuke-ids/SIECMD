@@ -1,4 +1,5 @@
 import tensorflow as tf
+import keras
 from keras import backend as K
 import numpy as np
 import json
@@ -13,13 +14,13 @@ def cyclic_loss(y_true, y_pred):
     '''
     a = tf.math.subtract(y_true, y_pred)
     b = tf.math.subtract(tf.math.add(y_true,  360), y_pred)
-    clockwise_distance = K.switch(y_true >= y_pred, a, b)
+    clockwise_distance = tf.where(y_true >= y_pred, a, b)
 
     a = tf.math.subtract(y_pred, y_true)
     b = tf.math.subtract(tf.math.add(y_pred,  360), y_true)
-    counter_clockwise_distance = K.switch(y_pred >= y_true, a, b)
+    counter_clockwise_distance = tf.where(y_pred >= y_true, a, b)
 
-    loss = K.switch(clockwise_distance < counter_clockwise_distance,
+    loss = tf.where(clockwise_distance < counter_clockwise_distance,
                     tf.math.abs(clockwise_distance),
                     tf.math.abs(counter_clockwise_distance))
     return loss

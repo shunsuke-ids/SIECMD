@@ -2,6 +2,7 @@ import argparse
 import os
 import pickle as pkl
 
+import keras
 from keras.callbacks import ModelCheckpoint
 
 from src.preprocessing.augment import *
@@ -43,7 +44,7 @@ for i in range(args.n):
     if not os.path.isdir(weights_path):
         os.mkdir(weights_path)
 
-    checkpoint_filepath = f'{weights_path}/weights_{i}.keras'
+    checkpoint_filepath = f'{weights_path}/weights_{i}.weights.h5'
 
     model_checkpoint_callback = ModelCheckpoint(
         filepath=checkpoint_filepath,
