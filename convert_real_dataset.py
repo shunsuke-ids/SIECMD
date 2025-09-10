@@ -31,9 +31,10 @@ def extract_angle_from_csv(csv_path):
         print(f"Error reading {csv_path}: {e}")
         return None
 
-def convert_real_dataset(source_dir, output_dir, dataset_name):
+def convert_real_dataset(source_dir, output_dir, dataset_name, use_single_fold=True):
     """
     Convert fold-based dataset with CSV annotations to angle-based dataset
+    Only use fold0 to avoid data duplication
     """
     source_path = Path(source_dir)
     output_path = Path(output_dir)
@@ -45,11 +46,22 @@ def convert_real_dataset(source_dir, output_dir, dataset_name):
     print(f"Source: {source_path}")
     print(f"Output: {output_path}")
     
+    if use_single_fold:
+        print("Using only fold0 to avoid data duplication")
+    
     total_images = 0
     angle_counts = {}
     
-    # Process each fold
-    for fold_dir in source_path.glob('fold*'):
+    # Process only specified folds
+    folds_to_process = ['fold0'] if use_single_fold else list(source_path.glob('fold*'))
+    
+    for fold_dir in folds_to_process:
+        if isinstance(fold_dir, str):
+            fold_dir = source_path / fold_dir
+        
+        if not fold_dir.exists():
+            continue
+            
         print(f"\nProcessing {fold_dir.name}...")
         
         # Process train and test directories
@@ -88,7 +100,7 @@ def convert_real_dataset(source_dir, output_dir, dataset_name):
                     angle_dir.mkdir(exist_ok=True)
                     
                     # Create unique filename
-                    new_name = f"{fold_dir.name}_{split_dir}_{tif_file.name}"
+                    new_name = f"{split_dir}_{tif_file.name}"
                     dest_path = angle_dir / new_name
                     
                     # Copy image file
@@ -118,21 +130,27 @@ def main():
         os.system("pip install pandas")
         import pandas as pd
     
-    # Convert NIH3T3 dataset
+    # Remove existing output directory and create fresh
+    output_base = "/home/shunsuke/lab/siecmd/real_data"
+    if Path(output_base).exists():
+        print(f"Removing existing {output_base}...")
+        shutil.rmtree(output_base)
+    
+    # Convert NIH3T3 dataset using only fold0
     nih_source = "/home/shunsuke/datasets/datasets/NIH3T3_4foldcv"
     nih_output = "/home/shunsuke/lab/siecmd/real_data/NIH3T3"
     
     if os.path.exists(nih_source):
-        convert_real_dataset(nih_source, nih_output, "NIH3T3")
+        convert_real_dataset(nih_source, nih_output, "NIH3T3", use_single_fold=True)
     else:
         print(f"NIH3T3 dataset not found at {nih_source}")
     
-    # Convert U373 dataset  
+    # Convert U373 dataset using only fold0
     u373_source = "/home/shunsuke/datasets/datasets/U373_4foldcv"
     u373_output = "/home/shunsuke/lab/siecmd/real_data/U373"
     
     if os.path.exists(u373_source):
-        convert_real_dataset(u373_source, u373_output, "U373")
+        convert_real_dataset(u373_source, u373_output, "U373", use_single_fold=True)
     else:
         print(f"U373 dataset not found at {u373_source}")
 
