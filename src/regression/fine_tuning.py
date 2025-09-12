@@ -3,7 +3,6 @@ import pickle as pkl
 import argparse
 
 import keras_cv
-import keras
 from keras import models as km, layers as kl
 from keras.callbacks import ModelCheckpoint
 
@@ -80,7 +79,7 @@ for i in range(0, args.n):
     if not os.path.isdir(weights_path):
         os.mkdir(weights_path)
 
-    checkpoint_filepath = f'{weights_path}/weights{args.dataset}_{i}.weights.h5'
+    checkpoint_filepath = f'{weights_path}/weights{args.dataset}_{i}.keras'
     model_checkpoint_callback = ModelCheckpoint(
         filepath=checkpoint_filepath,
         save_weights_only=True,

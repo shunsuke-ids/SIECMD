@@ -28,6 +28,12 @@ env/
 ENV/
 .venv/
 .env/
+weights/
+prepared_data/
+sample_data/
+real_data/
+cuda-keyring_1.0-1_all.deb
+*.weights.h5.backup
 
 # Jupyter Notebook
 .ipynb_checkpoints
